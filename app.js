@@ -1709,17 +1709,17 @@ $$('.swatch-v', root).forEach((btn) => {
           <div class="world-contact">
             <div class="contact-card">
               <span class="cc-label">INSTAGRAM</span>
-              <a href="https://instagram.com/ka__2410" target="_blank" rel="noopener" class="cc-value">@ka__2410</a>
+              <a href="https://www.instagram.com/ka__2410/" target="_blank" rel="noopener" class="cc-value">@ka__2410</a>
               <span class="cc-hint">Fastest response — DMs open</span>
             </div>
             <div class="contact-card">
               <span class="cc-label">EMAIL</span>
-              <a href="mailto:hello@ego.eg" class="cc-value">hello@ego.eg</a>
+              <a href="mailto:hello@Karam" class="cc-value">hello@Karam</a>
               <span class="cc-hint">For orders & partnerships</span>
             </div>
             <div class="contact-card">
               <span class="cc-label">WHATSAPP</span>
-              <a href="https://wa.me/201211659075" target="_blank" rel="noopener" class="cc-value">+20 121 165 9075</a>
+              <a href="https://wa.me/201211659075?text=%D8%A3%D8%B1%D9%8A%D8%AF+%D8%A7%D9%84%D8%B9%D9%85%D9%84+%D9%85%D8%B9%D9%83&utm" target="_blank" rel="noopener" class="cc-value">+20 121 165 9075</a>
               <span class="cc-hint">Mon–Fri, 10am–6pm</span>
             </div>
           </div>
