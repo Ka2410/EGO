@@ -253,13 +253,16 @@
      7. IMAGE SKELETON
      ========================================================= */
   function imgWithSkeleton(src, alt, cls = '') {
-    return `
-      <div class="img-wrap ${cls}">
-        <div class="img-skeleton" aria-hidden="true"></div>
-        <img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async" />
-      </div>
-    `;
-  }
+  return `
+    <div class="img-wrap ${cls}">
+      <div class="img-skeleton" aria-hidden="true"></div>
+      <img src="${esc(src)}" alt="${esc(alt)}"
+           loading="eager"
+           decoding="async"
+           fetchpriority="high" />
+    </div>
+  `;
+}
 
   function bindImageLoaders(root = document) {
     $$('.img-wrap', root).forEach((wrap) => {
@@ -1424,17 +1427,21 @@
           }
         });
       });
+$$('.swatch-v', root).forEach((btn) => {
+  btn.addEventListener('click', () => {
+    // ⬇️ بناخد القيمة زي ما هي — بدون cleanParam عشان ميبوظش "Black / Purple"
+    const newColor = btn.dataset.color;
+    if (!newColor) return;
+    if (!allowedColors.includes(newColor)) return;
+    if (newColor === activeColor.color) return;
 
-      $$('.swatch-v', root).forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const newColor = S.cleanParam(btn.dataset.color, S.MAX.color);
-          if (!allowedColors.includes(newColor) || newColor === activeColor.color) return;
-          activeColor = p.variants.find((v) => v.color === newColor);
-          galleryIndex = 0;
-          updateUrl(p.id, activeColor.color);
-          render();
-        });
-      });
+    activeColor = p.variants.find((v) => v.color === newColor);
+    if (!activeColor) return;
+    galleryIndex = 0;
+    updateUrl(p.id, activeColor.color);
+    render();
+  });
+});
 
       $$('.size-chip', root).forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -2659,50 +2666,63 @@
   }
 
   function updateSizeModalUI() {
-    const p = byId[state.modal.productId];
-    if (!p) return;
+  const p = byId[state.modal.productId];
+  if (!p) return;
 
-    const v = p.variants.find((x) => x.color === state.modal.color) || p.variants[0];
+  const v = p.variants.find((x) => x.color === state.modal.color) || p.variants[0];
 
-    dom.sizeModalImg.src = v.flat;
-    dom.sizeModalImg.alt = p.name;
-    dom.sizeModalColor.textContent = p.tagline;
-    dom.sizeModalName.textContent = p.name;
-    dom.sizeModalPrice.textContent = formatEGP(p.price);
+  // Header
+  dom.sizeModalImg.src = v.flat;
+  dom.sizeModalImg.alt = p.name;
+  dom.sizeModalColor.textContent = p.tagline;
+  dom.sizeModalName.textContent = p.name;
+  dom.sizeModalPrice.textContent = formatEGP(p.price);
 
-    dom.sizeModalColors.innerHTML = p.variants.map((vv) => `
-      <button class="swatch-v ${vv.color === state.modal.color ? 'is-active' : ''}"
-              data-modal-color="${esc(vv.color)}"
-              aria-pressed="${vv.color === state.modal.color}">
-        <span class="swatch-v-dot" style="background:${swatchBg(vv)}"></span>
-        <span class="swatch-v-label">${esc(vv.color)}</span>
-      </button>
-    `).join('');
+  // Selected color name — shown next to "01 / COLOR"
+  const selectedColorEl = document.getElementById('sizeModalSelectedColor');
+  if (selectedColorEl) selectedColorEl.textContent = state.modal.color || v.color;
 
-    $$('[data-modal-color]', dom.sizeModalColors).forEach((b) => {
-      b.addEventListener('click', () => {
-        const newColor = S.cleanParam(b.dataset.modalColor, S.MAX.color);
-        if (!p.variants.some((vv) => vv.color === newColor)) return;
-        state.modal.color = newColor;
-        updateSizeModalUI();
-      });
+  // CTA price
+  const ctaPrice = document.getElementById('modalCtaPrice');
+  if (ctaPrice) ctaPrice.textContent = formatEGP(p.price);
+
+  // Color swatches
+  dom.sizeModalColors.innerHTML = p.variants.map((vv) => `
+    <button class="swatch-v ${vv.color === state.modal.color ? 'is-active' : ''}"
+            data-modal-color="${esc(vv.color)}"
+            aria-pressed="${vv.color === state.modal.color}">
+      <span class="swatch-v-dot" style="background:${swatchBg(vv)}"></span>
+      <span class="swatch-v-label">${esc(vv.color)}</span>
+    </button>
+  `).join('');
+
+  $$('[data-modal-color]', dom.sizeModalColors).forEach((b) => {
+    b.addEventListener('click', () => {
+      const newColor = b.dataset.modalColor;
+      if (!newColor) return;
+      if (!p.variants.some((vv) => vv.color === newColor)) return;
+      if (newColor === state.modal.color) return;
+      state.modal.color = newColor;
+      updateSizeModalUI();
     });
+  });
 
-    dom.sizeChips.innerHTML = p.sizes.map((s) => `
-      <button class="size-chip" data-modal-size="${esc(s)}"
-              aria-pressed="${state.modal.size === s}">${esc(s)}</button>
-    `).join('');
+  // Size chips
+  dom.sizeChips.innerHTML = p.sizes.map((s) => `
+    <button class="size-chip" data-modal-size="${esc(s)}"
+            aria-pressed="${state.modal.size === s}">${esc(s)}</button>
+  `).join('');
 
-    $$('[data-modal-size]', dom.sizeChips).forEach((b) => {
-      b.addEventListener('click', () => {
-        const size = S.cleanString(b.dataset.modalSize, S.MAX.size);
-        if (!p.sizes.includes(size)) return;
-        state.modal.size = size;
-        updateSizeModalUI();
-        dom.sizeError.hidden = true;
-      });
+  $$('[data-modal-size]', dom.sizeChips).forEach((b) => {
+    b.addEventListener('click', () => {
+      const size = S.cleanString(b.dataset.modalSize, S.MAX.size);
+      if (!p.sizes.includes(size)) return;
+      state.modal.size = size;
+      updateSizeModalUI();
+      dom.sizeError.hidden = true;
     });
-  }
+  });
+}
 
   function closeSizeModal() {
     dom.sizeModal.classList.remove('open');
@@ -2889,10 +2909,9 @@
     dom.wishlistBtn?.addEventListener('click', openWishlist);
     dom.closeWishlist?.addEventListener('click', closeWishlist);
 
-    dom.sizeModal?.addEventListener('click', (e) => {
-      if (e.target.matches('[data-close-modal]')) closeSizeModal();
-    });
-
+dom.sizeModal?.addEventListener('click', (e) => {
+  if (e.target.closest('[data-close-modal]')) closeSizeModal();
+});
     dom.confirmAddToBag?.addEventListener('click', () => {
       const p = byId[state.modal.productId];
       if (!p) return;
@@ -2927,10 +2946,9 @@
       const p = state.modal.productId ? byId[state.modal.productId] : null;
       openSizeGuide(p?.category || 'tops');
     });
-    dom.sizeGuideModal?.addEventListener('click', (e) => {
-      if (e.target.matches('[data-close-modal]')) closeSizeGuide();
-    });
-
+dom.sizeGuideModal?.addEventListener('click', (e) => {
+  if (e.target.closest('[data-close-modal]')) closeSizeGuide();
+});
     dom.menuBtn?.addEventListener('click', openMenu);
     dom.mobileMenuClose?.addEventListener('click', closeMenu);
     $$('#mobileMenu nav a').forEach((a) => a.addEventListener('click', closeMenu));

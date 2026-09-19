@@ -15,6 +15,7 @@
 
   <link rel="preload" as="image" href="assets/looks/look-01-raw-denim.png" fetchpriority="high" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="animations.css" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -313,14 +314,14 @@
           </div>
           <div class="footer-col">
             <h4>FOLLOW</h4>
-            <a href="https://instagram.com/ka__2410" target="_blank" rel="noopener">Instagram</a>
-            <a href="https://wa.me/201211659075" target="_blank" rel="noopener">WhatsApp</a>
+            <a href="https://www.instagram.com/ka__2410/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://wa.me/201211659075?text=%D8%A3%D8%B1%D9%8A%D8%AF+%D8%A7%D9%84%D8%B9%D9%85%D9%84+%D9%85%D8%B9%D9%83&utm" target="_blank" rel="noopener">WhatsApp</a>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
         <span>© 2026 EGO — ALL RIGHTS RESERVED</span>
-        <span>MADE IN EGYPT</span>
+        <span>MADE BY KARAM</span>
       </div>
     </div>
   </footer>
@@ -355,40 +356,52 @@
 
   <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
 
-  <!-- SIZE MODAL (Quick Add) -->
-  <div class="modal" id="sizeModal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal-backdrop" data-close-modal></div>
-    <div class="modal-panel">
-      <button class="modal-close" type="button" data-close-modal aria-label="Close">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <div class="modal-preview"><img id="sizeModalImg" src="" alt="" /></div>
-      <div class="modal-body">
-        <span class="modal-kicker" id="sizeModalColor">SELECT COLOR</span>
+  <!-- SIZE MODAL (Quick Add) — Product Sheet Layout -->
+<div class="modal" id="sizeModal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel">
+    <button class="modal-close" type="button" data-close-modal aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+
+    <!-- Header: image + name + price -->
+    <div class="modal-header">
+      <div class="modal-preview">
+        <img id="sizeModalImg" src="" alt="" />
+      </div>
+      <div class="modal-head-info">
+        <span class="modal-kicker" id="sizeModalColor">CORE ESSENTIAL</span>
         <h3 id="sizeModalName">PRODUCT</h3>
         <p class="modal-price" id="sizeModalPrice">EGP 0</p>
-
-        <div class="color-block">
-          <span class="block-label">COLOR</span>
-          <div class="color-swatches color-swatches--pdp" id="sizeModalColors"></div>
-        </div>
-
-        <div class="size-block">
-          <div class="size-head">
-            <span>SELECT SIZE</span>
-            <button type="button" class="size-guide-link" id="openSizeGuide">SIZE GUIDE ↗</button>
-          </div>
-          <div class="size-chips" id="sizeChips"></div>
-          <p class="size-error" id="sizeError" hidden>Please select a size to continue.</p>
-        </div>
-
-        <button class="modal-cta" id="confirmAddToBag" type="button">
-          ADD TO BAG <span>+</span>
-        </button>
       </div>
     </div>
-  </div>
 
+    <!-- Body: sections -->
+    <div class="modal-body">
+      <div class="color-block">
+        <div class="block-label-row">
+          <span class="block-label">01 / COLOR</span>
+          <strong class="block-value" id="sizeModalSelectedColor">BLACK</strong>
+        </div>
+        <div class="color-swatches color-swatches--pdp" id="sizeModalColors"></div>
+      </div>
+
+      <div class="size-block">
+        <div class="block-label-row">
+          <span class="block-label">02 / SIZE</span>
+          <button type="button" class="size-guide-link" id="openSizeGuide">SIZE GUIDE ↗</button>
+        </div>
+        <div class="size-chips" id="sizeChips"></div>
+        <p class="size-error" id="sizeError" hidden>Please select a size to continue.</p>
+      </div>
+
+      <button class="modal-cta" id="confirmAddToBag" type="button">
+        <span>ADD TO BAG</span>
+        <span class="cta-price" id="modalCtaPrice">EGP 0</span>
+      </button>
+    </div>
+  </div>
+</div>
   <!-- SIZE GUIDE MODAL -->
   <div class="modal" id="sizeGuideModal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-backdrop" data-close-modal></div>
@@ -429,8 +442,12 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
+
+  
   <script src="sanitize.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="animations.js"></script>
+  <script src="protect.js"></script>
 </body>
 </html>

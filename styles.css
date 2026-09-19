@@ -538,11 +538,14 @@ h1 span {
   position: relative;
   height: 94%;
   width: auto;
-  max-width: 100%;
+  max-width: 90%;
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
   pointer-events: none;
+       translate: 50px 0;  /* ✅ مستقل — مش بيتعارض */
+   /* ← يزحلق 20px شمال */
+
 } 
 
 /* ---- HUD ---- */
