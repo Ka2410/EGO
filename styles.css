@@ -58,7 +58,15 @@
    2. RESET
    ========================================================= */
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--bg); }
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge قديم */
+}
+html::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari / Opera */
+}
 body {
   margin: 0;
   background: var(--bg);
@@ -3303,7 +3311,7 @@ body.is-rtl .size-table td { text-align: right; }
 
 /* =========================================================
    28. MOBILE OVERLAY HERO
-   Full-bleed mannequin + overlay text
+   Full-bleed mannequin + overlay text (text BEHIND character)
    ========================================================= */
 
 @media (max-width: 700px) {
@@ -3336,7 +3344,7 @@ body.is-rtl .size-table td { text-align: right; }
   }
 
   /* -----------------------------------------
-     Character stage — full screen behind text
+     Character stage — full screen, ABOVE text
      ----------------------------------------- */
   .character-stage {
     position: absolute;
@@ -3353,7 +3361,7 @@ body.is-rtl .size-table td { text-align: right; }
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    z-index: 1;
+    z-index: 5;                 /* ← فوق الـ h1 (z: 2) */
     cursor: grab;
   }
   .character-stage:active { cursor: grabbing; }
@@ -3368,7 +3376,10 @@ body.is-rtl .size-table td { text-align: right; }
   }
 
   /* -----------------------------------------
-     Hero copy — overlay with gradient
+     Hero copy — overlay container (no stacking context)
+     - h1 goes BEHIND the character (z: 2)
+     - eyebrow + CTA stay on top (z: 10)
+     - gradients drawn via ::before / ::after at z: 7
      ----------------------------------------- */
   .hero-copy {
     position: absolute;
@@ -3378,22 +3389,40 @@ body.is-rtl .size-table td { text-align: right; }
     bottom: 0;
     width: 100%;
     padding: 24px 20px calc(var(--safe-bottom) + 40px);
-    z-index: 8;
+    z-index: auto;              /* ← مهم: نلغي الـ stacking context */
     display: flex;
     flex-direction: column;
+    background: none;           /* ← نشيل الجرادينت من هنا */
+    pointer-events: none;
+  }
 
-    /* Gradient overlay for readability */
-    background:
-      linear-gradient(180deg,
-        rgba(8, 8, 8, .65) 0%,
-        rgba(8, 8, 8, .25) 22%,
-        transparent 40%,
-        transparent 55%,
-        rgba(8, 8, 8, .55) 72%,
-        rgba(8, 8, 8, .92) 92%,
-        rgba(8, 8, 8, .98) 100%);
+  /* Top gradient — فوق المانيكان، تحت الـ eyebrow */
+  .hero-copy::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 28%;
+    background: linear-gradient(180deg,
+      rgba(8, 8, 8, 0.75) 0%,
+      rgba(8, 8, 8, 0.25) 55%,
+      transparent 100%);
+    z-index: 7;
+    pointer-events: none;
+  }
 
-    pointer-events: none; /* allow swipe to pass through */
+  /* Bottom gradient — فوق المانيكان، تحت الـ meta والـ CTA */
+  .hero-copy::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 55%;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(8, 8, 8, 0.45) 42%,
+      rgba(8, 8, 8, 0.9) 76%,
+      rgba(8, 8, 8, 0.98) 100%);
+    z-index: 7;
+    pointer-events: none;
   }
 
   /* Re-enable pointer on interactive children */
@@ -3402,8 +3431,10 @@ body.is-rtl .size-table td { text-align: right; }
     pointer-events: auto;
   }
 
-  /* Eyebrow */
+  /* Eyebrow — فوق المانيكان */
   .hero-copy .eyebrow {
+    position: relative;
+    z-index: 10;
     font-size: 10px;
     letter-spacing: .18em;
     margin-bottom: 14px;
@@ -3414,8 +3445,10 @@ body.is-rtl .size-table td { text-align: right; }
     box-shadow: 0 0 10px var(--lime);
   }
 
-  /* h1 — headline */
+  /* h1 — ورا المانيكان */
   .hero-copy h1 {
+    position: relative;
+    z-index: 2;                 /* ← أقل من character-stage (5) */
     margin: 0;
     font-size: clamp(52px, 16vw, 72px);
     line-height: .82;
@@ -3428,8 +3461,10 @@ body.is-rtl .size-table td { text-align: right; }
     display: none;
   }
 
-  /* CTA — pushed to bottom */
+  /* CTA — فوق المانيكان، مثبّت تحت */
   .hero-copy .primary-cta {
+    position: relative;
+    z-index: 10;
     margin-top: auto;
     width: 100%;
     justify-content: space-between;
@@ -3494,7 +3529,7 @@ body.is-rtl .size-table td { text-align: right; }
     left: 0;
     right: 0;
     bottom: calc(var(--safe-bottom) + 20px);
-    z-index: 10;
+    z-index: 11;                /* ← فوق كل حاجة */
     padding: 0;
     background: none;
     pointer-events: auto;
